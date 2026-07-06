@@ -22,7 +22,14 @@ function checkUnlock() {
   rafId = requestAnimationFrame(checkUnlock);
 }
 
+// Listeners are attached once and gated on `locked` rather than
+// added/removed by lock()/unlock(). OS key-repeat keeps firing keydown
+// events for as long as Space is physically held; add/remove timing
+// around the exact instant unlock() fires could let one slip through
+// unsuppressed. A synchronous flag check has no such race.
+
 function onKeyDown(event) {
+  if (!locked) return;
   if (event.code === 'Space') {
     tracker.press(performance.now());
   }
@@ -30,9 +37,20 @@ function onKeyDown(event) {
 }
 
 function onKeyUp(event) {
+  if (!locked) return;
   if (event.code === 'Space') {
     tracker.release();
   }
+  suppressEvent(event);
+}
+
+function onContextMenu(event) {
+  if (!locked) return;
+  suppressEvent(event);
+}
+
+function onScrollOrTouch(event) {
+  if (!locked) return;
   suppressEvent(event);
 }
 
@@ -44,16 +62,23 @@ function onFullscreenChange() {
   }
 }
 
+window.addEventListener('keydown', onKeyDown, true);
+window.addEventListener('keyup', onKeyUp, true);
+window.addEventListener('contextmenu', onContextMenu, true);
+window.addEventListener('wheel', onScrollOrTouch, { capture: true, passive: false });
+window.addEventListener('touchmove', onScrollOrTouch, { capture: true, passive: false });
+document.addEventListener('fullscreenchange', onFullscreenChange);
+
 function lock() {
   locked = true;
+  // Even with the flag gate above, a stray unsuppressed Space keyup should
+  // not be able to activate a focused button — so make sure nothing is
+  // focused for the duration of the lock.
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
   overlay.classList.add('active');
   document.documentElement.requestFullscreen().catch(() => {});
-  window.addEventListener('keydown', onKeyDown, true);
-  window.addEventListener('keyup', onKeyUp, true);
-  window.addEventListener('contextmenu', suppressEvent, true);
-  window.addEventListener('wheel', suppressEvent, { capture: true, passive: false });
-  window.addEventListener('touchmove', suppressEvent, { capture: true, passive: false });
-  document.addEventListener('fullscreenchange', onFullscreenChange);
   rafId = requestAnimationFrame(checkUnlock);
 }
 
@@ -68,12 +93,6 @@ function unlock() {
   if (document.fullscreenElement) {
     document.exitFullscreen().catch(() => {});
   }
-  window.removeEventListener('keydown', onKeyDown, true);
-  window.removeEventListener('keyup', onKeyUp, true);
-  window.removeEventListener('contextmenu', suppressEvent, true);
-  window.removeEventListener('wheel', suppressEvent, true);
-  window.removeEventListener('touchmove', suppressEvent, true);
-  document.removeEventListener('fullscreenchange', onFullscreenChange);
 }
 
 lockButton.addEventListener('click', lock);

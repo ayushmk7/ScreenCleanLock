@@ -8,47 +8,90 @@
     margin: 0;
     height: 100%;
     overflow: hidden;
-    background: #111;
-    color: #eee;
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, -apple-system, sans-serif;
   }
   body {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #1c2333, #0b0d13 70%);
+    color: #eee;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .card h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f2f4f8;
+  }
+  .card p.tagline {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    color: #8b93a7;
   }
   #lockButton {
-    font-size: 1.5rem;
-    padding: 0.75em 1.5em;
-    border-radius: 0.5em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 0.85em 1.9em;
+    border-radius: 0.75em;
     border: none;
-    background: #2d6cdf;
+    background: linear-gradient(135deg, #3b7dff, #2d5fd0);
     color: white;
     cursor: pointer;
+    box-shadow: 0 8px 24px rgba(45, 95, 208, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  }
+  #lockButton:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 10px 28px rgba(45, 95, 208, 0.45);
+  }
+  #lockButton:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 14px rgba(45, 95, 208, 0.35);
   }
   #overlay {
-    display: none;
     position: fixed;
     inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     background: #000;
     z-index: 999999;
     cursor: none;
-    align-items: flex-end;
-    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
   }
   #overlay.active {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
   #overlay p {
     color: #555;
     font-size: 0.85rem;
-    margin-bottom: 2rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 2.5rem;
   }
 </style>
 </head>
 <body>
-  <button id="lockButton">Lock Screen</button>
+  <div class="card">
+    <h1>ScreenCleanLock</h1>
+    <p class="tagline">Lock your screen and keyboard so you can wipe it down safely.</p>
+    <button id="lockButton">🔒 Lock Screen</button>
+  </div>
   <div id="overlay">
     <p>Hold Space for 2 seconds to unlock</p>
   </div>
