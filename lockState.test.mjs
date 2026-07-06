@@ -29,3 +29,21 @@ test('repeated press calls (key-repeat while held) do not reset the start time',
   tracker.press(1900);
   assert.equal(tracker.isHeldLongEnough(3000), true);
 });
+
+test('elapsedMs is null before any press', () => {
+  const tracker = createHoldTracker(2000);
+  assert.equal(tracker.elapsedMs(1000), null);
+});
+
+test('elapsedMs reports time since press', () => {
+  const tracker = createHoldTracker(2000);
+  tracker.press(1000);
+  assert.equal(tracker.elapsedMs(1300), 300);
+});
+
+test('elapsedMs is null again after release', () => {
+  const tracker = createHoldTracker(2000);
+  tracker.press(1000);
+  tracker.release();
+  assert.equal(tracker.elapsedMs(1500), null);
+});

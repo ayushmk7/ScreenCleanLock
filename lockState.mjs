@@ -13,5 +13,8 @@ export function createHoldTracker(thresholdMs) {
     isHeldLongEnough(nowMs) {
       return pressedAt !== null && (nowMs - pressedAt) >= thresholdMs;
     },
+    elapsedMs(nowMs) {
+      return pressedAt === null ? null : nowMs - pressedAt;
+    },
   };
 }

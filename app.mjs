@@ -4,6 +4,7 @@ const UNLOCK_HOLD_MS = 2000;
 
 const lockButton = document.getElementById('lockButton');
 const overlay = document.getElementById('overlay');
+const holdTimer = document.getElementById('holdTimer');
 
 const tracker = createHoldTracker(UNLOCK_HOLD_MS);
 let locked = false;
@@ -14,8 +15,21 @@ function suppressEvent(event) {
   event.stopPropagation();
 }
 
+function updateHoldTimer(nowMs) {
+  const elapsed = tracker.elapsedMs(nowMs);
+  if (elapsed === null) {
+    holdTimer.classList.remove('active');
+    return;
+  }
+  const remaining = Math.max(0, UNLOCK_HOLD_MS - elapsed);
+  holdTimer.textContent = `${(remaining / 1000).toFixed(3)}s`;
+  holdTimer.classList.add('active');
+}
+
 function checkUnlock() {
-  if (tracker.isHeldLongEnough(performance.now())) {
+  const now = performance.now();
+  updateHoldTimer(now);
+  if (tracker.isHeldLongEnough(now)) {
     unlock();
     return;
   }
@@ -85,6 +99,7 @@ function lock() {
 function unlock() {
   locked = false;
   overlay.classList.remove('active');
+  holdTimer.classList.remove('active');
   tracker.release();
   if (rafId !== null) {
     cancelAnimationFrame(rafId);
