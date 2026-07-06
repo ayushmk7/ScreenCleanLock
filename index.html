@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScreenCleanLock</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #111;
+    color: #eee;
+    font-family: system-ui, sans-serif;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  #lockButton {
+    font-size: 1.5rem;
+    padding: 0.75em 1.5em;
+    border-radius: 0.5em;
+    border: none;
+    background: #2d6cdf;
+    color: white;
+    cursor: pointer;
+  }
+  #overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 999999;
+    cursor: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  #overlay.active {
+    display: flex;
+  }
+  #overlay p {
+    color: #333;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+</style>
+</head>
+<body>
+  <button id="lockButton">Lock Screen</button>
+  <div id="overlay">
+    <p>Hold Space for 2 seconds to unlock</p>
+  </div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
