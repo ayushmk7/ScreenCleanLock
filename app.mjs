@@ -69,10 +69,12 @@ function onScrollOrTouch(event) {
 }
 
 function onFullscreenChange() {
-  // Browsers force-exit fullscreen on Escape and JS cannot stop it —
-  // if that happens while we think we're locked, re-sync to reality.
+  // Browsers force-exit fullscreen on Escape (or a mouse click on the
+  // browser's own "exit fullscreen" affordance) and JS cannot preventDefault
+  // that. Re-entering immediately, instead of unlocking, means neither
+  // escape hatch can end the lock — only the hold-space timer can.
   if (locked && !document.fullscreenElement) {
-    unlock();
+    document.documentElement.requestFullscreen().catch(() => {});
   }
 }
 
